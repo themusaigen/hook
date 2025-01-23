@@ -1,0 +1,14 @@
+{
+  "name": "hook",
+  "library": "src",
+  "source": "demo",
+  "build": {
+    "output": "dist",
+    "additionalDirs": []
+  },
+  "distribute": {
+    "output": "dist",
+    "additionalDirs": [],
+    "ignoredDirs": []
+  }
+}

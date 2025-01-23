@@ -1,0 +1,20 @@
+{
+  "[lua]": {
+    "editor.defaultFormatter": "sumneko.lua",
+  },
+  "files.encoding": "windows1251",
+  "Lua.runtime.version": "LuaJIT",
+  "Lua.runtime.path": [
+    "demo/?.lua",
+    "demo/?/init.lua",
+    "src/?.lua",
+    "src/?/init.lua"
+  ],
+  "Lua.diagnostics.globals": [
+    "main"
+  ],
+  "Lua.workspace.library": [
+    "${addons}/moonloader/module/library"
+  ],
+  "Lua.workspace.checkThirdParty": false
+}
