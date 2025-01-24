@@ -10,10 +10,10 @@ return {
   X86_JO_OPCODE          = 0x70,
   X86_LOOPN_OPCODE       = 0xE0,
   X86_JO_2BYTE_OPCODE    = 0x80,
-  X86_64_NOP_OPCODE      = 0x90,
+  X86_NOP_OPCODE         = 0x90,
 
-  X86_64_2BYTE_INSN_PREF = 0x0F,
-  X86_64_2BYTE_INSN_SIZE = 6,
+  X86_2BYTE_INSN_PREF    = 0x0F,
+  X86_2BYTE_INSN_SIZE    = 6,
 
   JMP_MASK               = 0xFD,
   JCC_MASK               = 0xF0,

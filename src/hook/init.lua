@@ -6,7 +6,7 @@
 ---@field protected relay function
 ---@field protected original_bytes ffi.cdata*
 ---@field protected trampoline ffi.cdata*
----@field protected codecave integer
+---@field protected codecave Codecave
 ---@field protected usercode_jump_backup ffi.cdata*
 ---@field installed boolean
 ---@field install fun(self: Hook): boolean, integer?
@@ -17,7 +17,7 @@
 local hook = {
   _NAME = "hook",
   _DESCRIPTION = "Hooking library for GTA:SA written in Lua",
-  _VERSION = "1.0.0",
+  _VERSION = "1.1.0",
   _RELEASE = "beta",
   _AUTHOR = "Musaigen"
 }
@@ -133,7 +133,7 @@ function hook:install()
   -- If we got the usercode backup.
   if self.usercode_jump_backup then
     -- Then just restore him.
-    utility.copy(self.codecave, self.usercode_jump_backup, const.X86_HOOK_SIZE)
+    utility.copy(self.codecave:get_region(), self.usercode_jump_backup, const.X86_HOOK_SIZE)
 
     -- Mark as installed.
     self.installed = true
@@ -177,7 +177,7 @@ function hook:install()
     memory.setuint8(self.address, const.X86_JMP_OPCODE)
 
     -- Set new trampoline after the usercode jump instruction.
-    self.trampoline = ffi.cast(self.prototype, self.codecave + const.X86_HOOK_SIZE)
+    self.trampoline = ffi.cast(self.prototype, self.codecave:get_region() + const.X86_HOOK_SIZE)
   else
     -- Call opcode, use call destination for trampoline.
     local branch_destination = utility.restore_absolute_address(memory.getuint32(self.address + 1), self.address,
@@ -188,11 +188,12 @@ function hook:install()
   end
 
   -- Set jump to relay.
-  memory.setuint32(self.address + 1, utility.get_relative_address(self.codecave, self.address, const.X86_HOOK_SIZE))
+  memory.setuint32(self.address + 1,
+    utility.get_relative_address(self.codecave:get_region(), self.address, const.X86_HOOK_SIZE))
 
   -- Nop exceed bytes.
   if (self.size > const.X86_HOOK_SIZE) then
-    memory.fill(self.address + const.X86_HOOK_SIZE, const.X86_64_NOP_OPCODE, self.size - const.X86_HOOK_SIZE)
+    memory.fill(self.address + const.X86_HOOK_SIZE, const.X86_NOP_OPCODE, self.size - const.X86_HOOK_SIZE)
   end
 
   -- Restore protect.
@@ -226,7 +227,7 @@ function hook:remove()
     memory.protect(self.address, self.size, protect)
 
     -- Free trampoline.
-    codegenerator.free(self.codecave)
+    self.codecave:free()
 
     -- Garbage collect.
     self.codecave = nil
@@ -246,11 +247,11 @@ function hook:remove()
     -- Create storage for usercode jump backup.
     self.usercode_jump_backup = ffi.new("uint8_t[5]")
 
-    -- Copy bytes here.
-    utility.copy(self.usercode_jump_backup, self.codecave, const.X86_HOOK_SIZE)
+    -- Copy jump to the usercode.
+    self.codecave:extract(self.usercode_jump_backup, 0, const.X86_HOOK_SIZE)
 
     -- Nop jump to usercode.
-    memory.fill(self.codecave, const.X86_64_NOP_OPCODE, const.X86_HOOK_SIZE)
+    self.codecave:fill(0, const.X86_NOP_OPCODE, const.X86_HOOK_SIZE)
 
     -- Mark as uninstalled.
     self.installed = false
@@ -272,7 +273,7 @@ function hook:remove()
     -- Get the destination and check is branch pointing at our trampoline.
     -- If yes, fully unload, otherwise patch the hook.
     local destination = utility.restore_absolute_address(hs.imm.imm32, self.address, hs.len)
-    if (destination == self.codecave) then
+    if (destination == self.codecave:get_region()) then
       return full_unload()
     else
       return patch_hook()
