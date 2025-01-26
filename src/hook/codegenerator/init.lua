@@ -1,1 +1,1 @@
-return require("hook.allocator." .. jit.arch)
+return require("hook.codegenerator." .. jit.arch)
