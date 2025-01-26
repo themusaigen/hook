@@ -8,7 +8,7 @@ local utility = {}
 
 local ffi = require("ffi")
 
-local hde = require("hde")
+local hde = require("hook.hde")
 
 -- -------------------------------------------------------------------------- --
 

@@ -6,7 +6,7 @@ local codegenerator = {}
 
 -- -------------------------------------------------------------------------- --
 
-local hde           = require("hde32")
+local hde           = require("hook.hde")
 
 local Codecave      = require("hook.codecave")
 

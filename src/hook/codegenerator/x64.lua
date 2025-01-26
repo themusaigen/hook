@@ -8,7 +8,7 @@ local codegenerator = {}
 
 local ffi           = require("ffi")
 
-local hde           = require("hde64")
+local hde           = require("hook.hde")
 
 local Codecave      = require("hook.codecave")
 
