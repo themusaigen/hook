@@ -17,7 +17,7 @@
 local hook = {
   _NAME = "hook",
   _DESCRIPTION = "Hooking library for GTA:SA written in Lua",
-  _VERSION = "1.2.0",
+  _VERSION = "1.3.0",
   _RELEASE = "dev",
   _AUTHOR = "Musaigen"
 }
