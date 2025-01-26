@@ -11,8 +11,7 @@ Codecave.__index = Codecave
 
 -- -------------------------------------------------------------------------- --
 
-local memory = require("memory")
-
+local memory = require("hook.memory")
 local allocator = require("hook.allocator")
 local errors = require("hook.errors")
 local utility = require("hook.utility")

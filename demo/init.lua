@@ -25,6 +25,8 @@ function main()
     wait(0)
   end
 
+
+
   sampRegisterChatCommand("hook.new", function()
     local hook_idx = #hooks + 1
 
@@ -32,6 +34,14 @@ function main()
       sampGetBase() + 0x64010, function(hook, chat, type, text, prefix, textColor, prefixColor)
         hook:call(chat, type, ("[%d]: %s"):format(hook_idx, ffi.string(text)), prefix, textColor, prefixColor)
       end, true)
+  end)
+
+  sampRegisterChatCommand("hook.sc", function()
+    hooks[#hooks + 1] = hook.new("int(__thiscall*)(void*, const char*, int, unsigned int, unsigned short)",
+      sampGetBase() + 0x4FFC0, function(hook, ...)
+      print(...)
+      return hook:call(...)
+    end, true)
   end)
 
   sampRegisterChatCommand("hook.disable", function(arg)

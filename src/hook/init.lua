@@ -17,7 +17,7 @@
 local hook = {
   _NAME = "hook",
   _DESCRIPTION = "Hooking library for GTA:SA written in Lua",
-  _VERSION = "1.4.2",
+  _VERSION = "1.5.0",
   _RELEASE = "release-candidate",
   _AUTHOR = "Musaigen"
 }
@@ -29,10 +29,10 @@ local pool = {}
 -- -------------------------------------------------------------------------- --
 
 local ffi = require("ffi")
-local memory = require("memory")
 
 -- -------------------------------------------------------------------------- --
 
+local memory = require("hook.memory")
 local hde = require("hook.hde")
 local codegenerator = require("hook.codegenerator")
 local utility = require("hook.utility")
