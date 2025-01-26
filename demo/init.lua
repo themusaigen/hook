@@ -3,6 +3,9 @@ script_version("1.0.0")
 script_author("Musaigen")
 -- -------------------------------------------------------------------------- --
 
+require("sysinfo")
+require("virtualquery")
+
 local hook = require("hook")
 
 local ffi = require("ffi")
