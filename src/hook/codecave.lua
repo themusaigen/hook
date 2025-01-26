@@ -3,9 +3,9 @@
 -- Author: themusaigen
 
 ---@class Codecave
----@field private region integer
----@field private offset integer
----@field private size integer
+---@field protected region integer
+---@field protected size integer
+---@field protected offset integer
 local Codecave = {}
 Codecave.__index = Codecave
 
@@ -18,7 +18,6 @@ local errors = require("hook.errors")
 local utility = require("hook.utility")
 
 -- -------------------------------------------------------------------------- --
-
 
 -- The data type sizes.
 ---@alias DataType string | "int8" | "int16" | "int32" | "int64" | "uint8" | "uint16" | "uint32" | "uint64" | "float" | "double"
@@ -36,14 +35,17 @@ local types = {
 }
 
 --- Creates new codecave
+---@param address integer
 ---@param size integer
 ---@return Codecave?
 ---@return integer? # The error code.
-function Codecave.new(size)
+function Codecave.new(address, size)
+  assert(type(address) == "number")
   assert(type(size) == "number")
+  assert(address % 1 == 0)
   assert(size % 1 == 0)
 
-  local region = allocator.allocate(0, size)
+  local region = allocator.allocate(address, size)
   if not region then
     return nil, errors.ERROR_BAD_ALLOCATION
   else

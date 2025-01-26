@@ -24,6 +24,8 @@ return {
   MEM_RESERVE            = 0x00002000,
   MEM_RELEASE            = 0x00008000,
 
+  MAX_MEMORY_RANGE       = 0x40000000,
+
   PAGE_EXECUTE_READWRITE = 0x40,
   PAGE_SIZE              = 4096
 }

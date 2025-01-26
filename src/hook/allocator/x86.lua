@@ -20,12 +20,14 @@ ffi.cdef [[
 -- -------------------------------------------------------------------------- --
 
 --- Allocates the memory region with specified size.
+---@param address integer?
 ---@param size integer
 ---@return number?
-function allocator.allocate(size)
+function allocator.allocate(address, size)
   assert(type(size) == "number")
   assert(size % 1 == 0)
 
+  -- Yes, address is unused on x86.
   return tonumber(ffi.cast("unsigned int",
     ffi.C.VirtualAlloc(ffi.cast("void*", 0), size, bit.bor(const.MEM_COMMIT, const.MEM_RESERVE),
       const.PAGE_EXECUTE_READWRITE)))
