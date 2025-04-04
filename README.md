@@ -10,6 +10,7 @@ Hooking library written for GTA:SA (MP) in Lua language for 32-bit architecture.
 * Code generation for trampoline (thanks MinHook)
 * Hook-on-hook support.
 * Unloading in any conditions.
+* CPU context (general-purpose registers) retrieving.
 
 ## Installation
 

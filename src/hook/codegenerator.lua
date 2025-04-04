@@ -20,10 +20,11 @@ local utility       = require("hook.utility")
 ---@param address integer
 ---@param minimal_size integer
 ---@param target integer
+---@param context Hook.Context
 ---@return boolean # The status of code generation.
----@return Codecave? # The address of the trampoline.
+---@return Hook.Codecave? # The address of the trampoline.
 ---@return integer? # The error code.
-function codegenerator.new(address, minimal_size, target)
+function codegenerator.new(address, minimal_size, target, context)
   assert(type(address) == "number")
   assert(type(minimal_size) == "number")
   assert(address % 1 == 0)
@@ -112,6 +113,38 @@ function codegenerator.new(address, minimal_size, target)
 
   -- Jump to the usercode.
   codecave:set("uint32", 1, utility.get_relative_address(codecave:now(), codecave:get_region(), const.X86_HOOK_SIZE))
+
+  -- Copy registers.
+  codecave:push("uint8", 0xA3)
+  codecave:push("uint32", context:address("eax"))
+
+  codecave:push("uint8", 0x89)
+  codecave:push("uint8", 0x0D)
+  codecave:push("uint32", context:address("ecx"))
+
+  codecave:push("uint8", 0x89)
+  codecave:push("uint8", 0x1D)
+  codecave:push("uint32", context:address("ebx"))
+
+  codecave:push("uint8", 0x89)
+  codecave:push("uint8", 0x15)
+  codecave:push("uint32", context:address("edx"))
+
+  codecave:push("uint8", 0x89)
+  codecave:push("uint8", 0x25)
+  codecave:push("uint32", context:address("esp"))
+
+  codecave:push("uint8", 0x89)
+  codecave:push("uint8", 0x2D)
+  codecave:push("uint32", context:address("ebp"))
+
+  codecave:push("uint8", 0x89)
+  codecave:push("uint8", 0x35)
+  codecave:push("uint32", context:address("esi"))
+
+  codecave:push("uint8", 0x89)
+  codecave:push("uint8", 0x3D)
+  codecave:push("uint32", context:address("edi"))
 
   -- Call `target`
   codecave:push("uint8", const.X86_JMP_OPCODE)

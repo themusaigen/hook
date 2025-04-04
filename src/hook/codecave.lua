@@ -2,7 +2,7 @@
 -- Description: Module for creating and interacting with codecaves.
 -- Author: themusaigen
 
----@class Codecave
+---@class Hook.Codecave
 ---@field private region integer
 ---@field private offset integer
 ---@field private size integer
@@ -11,8 +11,8 @@ Codecave.__index = Codecave
 
 -- -------------------------------------------------------------------------- --
 
-local memory = require("memory")
 
+local memory = require("hook.memory")
 local allocator = require("hook.allocator")
 local errors = require("hook.errors")
 local utility = require("hook.utility")
@@ -37,7 +37,7 @@ local types = {
 
 --- Creates new codecave
 ---@param size integer
----@return Codecave?
+---@return Hook.Codecave?
 ---@return integer? # The error code.
 function Codecave.new(size)
   assert(type(size) == "number")

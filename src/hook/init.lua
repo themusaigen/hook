@@ -6,18 +6,14 @@
 ---@field protected relay function
 ---@field protected original_bytes ffi.cdata*
 ---@field protected trampoline ffi.cdata*
----@field protected codecave Codecave
+---@field protected codecave Hook.Codecave
+---@field protected cpu Hook.Context
 ---@field protected usercode_jump_backup ffi.cdata*
 ---@field installed boolean
----@field install fun(self: Hook): boolean, integer?
----@field remove fun(self: Hook): boolean, integer?
----@field call fun(self: Hook, ...: any): any
----@field target fun(self: Hook, address: integer): boolean
----@field callback fun(self: Hook, callback: function)
 local hook = {
   _NAME = "hook",
   _DESCRIPTION = "Hooking library for GTA:SA written in Lua",
-  _VERSION = "1.1.0",
+  _VERSION = "1.2.0",
   _RELEASE = "beta",
   _AUTHOR = "Musaigen"
 }
@@ -29,7 +25,7 @@ local pool = {}
 -- -------------------------------------------------------------------------- --
 
 local ffi = require("ffi")
-local memory = require("memory")
+local memory = require("hook.memory")
 local hde = require("hde")
 
 -- -------------------------------------------------------------------------- --
@@ -37,6 +33,7 @@ local hde = require("hde")
 local codegenerator = require("hook.codegenerator")
 local utility = require("hook.utility")
 local const = require("hook.const")
+local context = require("hook.context")
 local errors = require("hook.errors")
 
 -- -------------------------------------------------------------------------- --
@@ -47,9 +44,9 @@ local cast = ffi.cast
 
 --- Creates new jump hook.
 ---@param prototype string
----@param address integer?
----@param callback function?
----@param autoinstall boolean?
+---@param address? integer
+---@param callback? fun(hook: Hook, ...): any
+---@param autoinstall? boolean
 ---@return Hook
 function hook.new(prototype, address, callback, autoinstall)
   -- Validate the incoming data.
@@ -86,6 +83,7 @@ function hook.new(prototype, address, callback, autoinstall)
     trampoline           = nil, -- The function that we use to call the original.
     codecave             = nil, -- A block of memory allocated via VirtualAlloc.
     usercode_jump_backup = nil,
+    cpu                  = context.new(),
     installed            = false,
   }, hook)
 
@@ -150,7 +148,7 @@ function hook:install()
     -- Generate codecave.
     local status, codecave, err = codegenerator.new(self.address, const.X86_HOOK_SIZE,
       ---@diagnostic disable-next-line: param-type-mismatch
-      relay_address)
+      relay_address, self.cpu)
 
     -- If anything succesfull, assign new codecave.
     -- Otherwise return error.
@@ -314,12 +312,18 @@ function hook:target(address)
 end
 
 --- Sets the new function callback
----@param callback function
+---@param callback fun(hook: Hook, ...): any
 function hook:redirect(callback)
   assert(type(callback) == "function")
 
   -- Assign new callback.
   self.callback = callback
+end
+
+--- Returns CPU's context.
+---@return Hook.Context
+function hook:context()
+  return self.cpu
 end
 
 -- Auto unloading of all hooks.

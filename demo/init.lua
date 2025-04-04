@@ -27,6 +27,10 @@ function main()
 
     hooks[hook_idx] = hook.new("void(__thiscall*)(void*, int, const char*, const char*, unsigned long, unsigned long)",
       sampGetBase() + 0x64010, function(hook, chat, type, text, prefix, textColor, prefixColor)
+        local text_from_stack = hook:context():stack(2, "char*")
+
+        print("This text was intercepted by stack of hook #" .. hook_idx .. ": " .. ffi.string(text_from_stack))
+
         hook:call(chat, type, ("[%d]: %s"):format(hook_idx, ffi.string(text)), prefix, textColor, prefixColor)
       end, true)
   end)
